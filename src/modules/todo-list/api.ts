@@ -1,5 +1,14 @@
+const BASE_URL = "http://localhost:3000";
 
-const BASE_URL = "http://localhost:3000"
+export type PaginatedResponse<T> = {
+  first: number;
+  prev: number | null;
+  next: number | null;
+  last: number;
+  pages: number;
+  items: number;
+  data: T[];
+};
 
 export type TodoTdo = {
   id: string;
@@ -8,7 +17,12 @@ export type TodoTdo = {
 };
 
 export const todoListApi = {
-    getTodoList: () => {
-        return fetch(`${BASE_URL}/tasks`).then(res => res.json() as Promise<TodoTdo[]>) 
-    }
-}
+  getTodoList: (
+    { page }: { page: number },
+    { signal }: { signal: AbortSignal }
+  ) => {
+    return fetch(`${BASE_URL}/tasks?_page=${page}&_per_page=10`, {
+      signal
+    }).then(res => res.json() as Promise<PaginatedResponse<TodoTdo>>);
+  }
+};
